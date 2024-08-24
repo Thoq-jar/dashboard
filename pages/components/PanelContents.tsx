@@ -109,7 +109,7 @@ export default function PanelContents() {
           setTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
           setDate(formatDate(now));
           setGreeting(getGreeting(now.getHours()));
-          setSunsetOrRise(now < new Date(sunrise) ? `sunrise at ${sunrise}` : now < new Date(sunset) ? `sunset at ${sunset}` : `sunrise at ${sunrise}`);
+          setSunsetOrRise(now < new Date(sunrise) ? `sunrise is at ${sunrise}` : now < new Date(sunset) ? `sunset is at ${sunset}` : `sunrise is at ${sunrise}`);
         }, 500);
         return () => clearInterval(intervalId);
       });
@@ -120,7 +120,7 @@ export default function PanelContents() {
     const now = new Date();
     setTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
     setGreeting(getGreeting(now.getHours()));
-    setSunsetOrRise(now < new Date(sunrise) ? `sunrise at ${sunrise}` : now < new Date(sunset) ? `sunset at ${sunset}` : `sunrise at ${sunrise}`);
+    setSunsetOrRise(now < new Date(sunrise) ? `sunrise is at ${sunrise}` : now < new Date(sunset) ? `sunset is at ${sunset}` : `sunrise is at ${sunrise}`);
   }, [sunrise, sunset]);
 
   return (
