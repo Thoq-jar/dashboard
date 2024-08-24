@@ -173,8 +173,8 @@ export default function PanelContents() {
           <input placeholder={'Search the Internet'} name="searchBar" id="searchBar" className={'searchBar'} />
         </form>
 
-        <p style={{ fontSize: '45px', marginBottom: '0.2rem', fontWeight: 'lighter' }}>
-          {greeting}!</p>
+        <p className={'no-select'}
+           style={{ fontSize: '45px', marginBottom: '0.2rem', fontWeight: 'lighter' }}>{greeting}!</p>
 
         <p style={{ fontSize: '25px', fontWeight: 'lighter', cursor: 'pointer' }}
            onClick={() => {
@@ -188,13 +188,13 @@ export default function PanelContents() {
            }}>
         </p>
 
-        <p style={{ fontSize: '40px', marginBottom: '0.3rem', fontWeight: 'lighter' }}>The Temperature
+        <p style={{ fontSize: '40px', marginBottom: '-0.1rem', fontWeight: 'lighter' }}>The Temperature
           is {temperature}˚F</p>
 
-        <p style={{ fontSize: '40px', marginBottom: '0.3rem', fontWeight: 'lighter' }}>while the Humidity is
+        <p style={{ fontSize: '40px', marginBottom: '-0.1rem', fontWeight: 'lighter' }}>while the Humidity is
           around {humidity} %</p>
 
-        <p style={{ fontSize: '40px', marginBottom: '0.4rem', fontWeight: 'lighter' }}>and the {sunsetOrRise}</p>
+        <p style={{ fontSize: '40px', marginBottom: '0.3rem', fontWeight: 'lighter' }}>and the {sunsetOrRise}</p>
       </div>
     </main>
   );
