@@ -54,7 +54,7 @@ export default function PanelContents() {
   const [sunset, setSunset] = useState('');
   const [ip, setIp] = useState(() => {
     if (typeof window !== 'undefined' && window.localStorage) {
-      return localStorage.getItem('ip') || '192.168.1.28';
+      return localStorage.getItem('ip') || 'error';
     }
     return 'error';
   });
@@ -93,7 +93,8 @@ export default function PanelContents() {
       setTemperature(data.temperature);
       setHumidity(data.humidity);
     } catch (error: any) {
-      console.error(error);
+      const ip = document.getElementById('ip') as HTMLParagraphElement;
+      ip.innerText = 'Connection to Server failed! Change IP address?';
     }
   }
 
@@ -106,6 +107,10 @@ export default function PanelContents() {
         setSunset(sunset);
 
         const intervalId = setInterval(() => {
+          if (ip === 'error') {
+            const ip = document.getElementById('ip') as HTMLParagraphElement;
+            ip.innerText = 'Connection to Server failed! Change IP address?';
+          }
           const now = new Date();
           setTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
           setDate(formatDate(now));
@@ -176,7 +181,7 @@ export default function PanelContents() {
         <p className={'no-select'}
            style={{ fontSize: '45px', marginBottom: '0.2rem', fontWeight: 'lighter' }}>{greeting}!</p>
 
-        <p style={{ fontSize: '25px', fontWeight: 'lighter', cursor: 'pointer' }}
+        <p style={{ fontSize: '25px', fontWeight: 'lighter', cursor: 'pointer' }} id={'ip'}
            onClick={() => {
              const newIp = prompt('Enter new IP address:');
              if (newIp) {
