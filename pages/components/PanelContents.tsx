@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import React from 'react';
+import Image from 'next/image';
 
 const errorMessages = [
   'Oh 💩! Connection to Server failed: Change IP address?',
@@ -185,7 +186,7 @@ export default function PanelContents({ onImageUpload, onRevertToDefault }: Pane
     window.open(url, '_blank');
   }
 
-  async function getData(): Promise<void> {
+  const getData = useCallback(async (): Promise<void> => {
     try {
       const response = await fetch(`http://${ip}`);
       const data = await response.json();
@@ -195,42 +196,43 @@ export default function PanelContents({ onImageUpload, onRevertToDefault }: Pane
       const ipElement = document.getElementById('ip') as HTMLParagraphElement;
       ipElement.innerText = errorMessages[0];
     }
-  }
-
-  useEffect(() => {
-    getData().then();
-
-    fetchLocation().then(({ lat, lon }) => {
-      fetchSunriseSunset(lat, lon).then(({ sunrise, sunset }) => {
-        setSunrise(sunrise);
-        setSunset(sunset);
-        fetchWeatherCondition(lat, lon).then(({ description, icon }) => {
-          setWeatherCondition(description);
-          setWeatherIcon(icon);
-        });
-
-        const intervalId = setInterval(() => {
-          if (ip === 'error') {
-            const ip = document.getElementById('ip') as HTMLParagraphElement;
-            ip.innerText = 'Connection to Server failed! Change IP address?';
-          }
-          const now = new Date();
-          setTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-          setDate(formatDate(now));
-          setGreeting(getGreeting(now.getHours()));
-          setSunsetOrRise(`sunrise is at ${sunrise}\nand sunset is at ${sunset}`);
-        }, 1000);
-        return () => clearInterval(intervalId);
-      });
-    });
   }, [ip]);
 
-  useEffect(() => {
-    const now = new Date();
-    setTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-    setGreeting(getGreeting(now.getHours()));
-    setSunsetOrRise(`sunrise is at ${sunrise}\nand sunset is at ${sunset}`);
-  }, [sunrise, sunset]);
+
+useEffect(() => {
+  getData().then();
+
+  fetchLocation().then(({ lat, lon }) => {
+    fetchSunriseSunset(lat, lon).then(({ sunrise, sunset }) => {
+      setSunrise(sunrise);
+      setSunset(sunset);
+      fetchWeatherCondition(lat, lon).then(({ description, icon }) => {
+        setWeatherCondition(description);
+        setWeatherIcon(icon);
+      });
+
+      const intervalId = setInterval(() => {
+        if (ip === 'error') {
+          const ip = document.getElementById('ip') as HTMLParagraphElement;
+          ip.innerText = 'Connection to Server failed! Change IP address?';
+        }
+        const now = new Date();
+        setTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+        setDate(formatDate(now));
+        setGreeting(getGreeting(now.getHours()));
+        setSunsetOrRise(`sunrise is at ${sunrise}\nand sunset is at ${sunset}`);
+      }, 1000);
+      return () => clearInterval(intervalId);
+    });
+  });
+}, [getData, ip]);
+
+useEffect(() => {
+  const now = new Date();
+  setTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+  setGreeting(getGreeting(now.getHours()));
+  setSunsetOrRise(`sunrise is at ${sunrise}\nand sunset is at ${sunset}`);
+}, [sunrise, sunset]);
 
 
   return (
@@ -268,7 +270,7 @@ export default function PanelContents({ onImageUpload, onRevertToDefault }: Pane
             {date}
             <div style={{ display: 'flex', alignItems: 'center', marginTop: '-0.6rem' }}>
               <p style={{ fontSize: '25px', fontWeight: 'lighter', marginRight: '10px' }}>{weatherCondition}</p>
-              <img src={weatherIcon} alt="Failed to load :("
+              <Image src={weatherIcon} width={50} height={50} alt="Failed to load :("
                    style={{ width: '50px', height: '50px', marginTop: '5px' }} className={'weather-icon'} />
             </div>
           </h3>
