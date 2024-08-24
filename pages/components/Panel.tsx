@@ -1,8 +1,14 @@
-'use client';
 import React from 'react';
 import PanelContents from './PanelContents';
 
-export default function Panel({ onImageUpload, onRevertToDefault }: { onImageUpload: (base64Image: string) => void, onRevertToDefault: () => void }) {
+interface PanelProps {
+  onImageUpload: (base64Image: string) => void;
+  onRevertToDefault: () => void;
+  onTintChange: (color: string) => void;
+  tintColor: string;
+}
+
+export default function Panel({ onImageUpload, onRevertToDefault, onTintChange, tintColor }: PanelProps) {
   return (
     <div style={{
       background: 'rgba(255, 255, 255, 0.1)',

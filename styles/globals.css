@@ -115,7 +115,7 @@ html, body {
   background-color: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
   border-radius: 10px;
-  color: rgb(100, 100, 100);
+  color: white;
   padding: 5px 10px;
   transition: all 1s ease;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
@@ -124,12 +124,16 @@ html, body {
   flex-direction: row;
 }
 
-.toolbar-section-label-size {
-  font-size: 20px;
-}
-
 .toolbar-title-label-size {
   font-size: 30px;
+}
+
+.toolbar-section-label-size {
+  font-size: 25px;
+}
+
+.toolbar-section-subtitle-size {
+  font-size: 20px;
 }
 
 .toolbar-section-label:hover {

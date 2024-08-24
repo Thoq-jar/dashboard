@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 export default function Home() {
   const defaultImage = 'background.jpg';
   const [backgroundImage, setBackgroundImage] = useState(defaultImage);
+  const [tintColor, setTintColor] = useState('rgba(0, 0, 0, 0.3)');
 
   useEffect(() => {
     const savedImage = localStorage.getItem('backgroundImage');
@@ -23,10 +24,14 @@ export default function Home() {
     localStorage.removeItem('backgroundImage');
   };
 
+  const handleTintChange = (color: string) => {
+    setTintColor(color);
+  };
+
   return (
     <>
-      <Wallpaper backgroundImage={backgroundImage} />
-      <Panel onImageUpload={handleImageUpload} onRevertToDefault={handleRevertToDefault} />
+      <Wallpaper backgroundImage={backgroundImage} tintColor={tintColor} />
+      <Panel onImageUpload={handleImageUpload} onRevertToDefault={handleRevertToDefault} onTintChange={handleTintChange} tintColor={tintColor} />
     </>
   );
 }

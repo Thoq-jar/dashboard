@@ -114,6 +114,13 @@ function mapWeatherCodeToIcon(code: number): string {
   return `http://openweathermap.org/img/wn/${weatherIcons[code]}@2x.png`;
 }
 
+function hexToRgba(hex: string, alpha: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 async function fetchWeatherCondition(lat: number, lon: number): Promise<{ description: string, icon: string }> {
   const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
   const data = await response.json();
@@ -124,7 +131,12 @@ async function fetchWeatherCondition(lat: number, lon: number): Promise<{ descri
   };
 }
 
-export default function PanelContents({ onImageUpload, onRevertToDefault }: { onImageUpload: (base64Image: string) => void, onRevertToDefault: () => void }) {
+interface PanelContentsProps {
+  onImageUpload: (base64Image: string) => void;
+  onRevertToDefault: () => void;
+}
+
+export default function PanelContents({ onImageUpload, onRevertToDefault }: PanelContentsProps) {
   const [greeting, setGreeting] = useState('');
   const [temperature, setTemperature] = useState(0);
   const [humidity, setHumidity] = useState(0);
@@ -265,7 +277,7 @@ export default function PanelContents({ onImageUpload, onRevertToDefault }: { on
             <div style={{ display: 'flex', alignItems: 'center', marginTop: '-0.6rem' }}>
               <p style={{ fontSize: '25px', fontWeight: 'lighter', marginRight: '10px' }}>{weatherCondition}</p>
               <img src={weatherIcon} alt="Failed to load :("
-                   style={{ width: '50px', height: '50px', marginTop: '5px' }} className={'weather-icon'}/>
+                   style={{ width: '50px', height: '50px', marginTop: '5px' }} className={'weather-icon'} />
             </div>
           </h3>
         </div>
@@ -310,9 +322,13 @@ export default function PanelContents({ onImageUpload, onRevertToDefault }: { on
           whiteSpace: 'pre-line',
         }}>The {sunsetOrRise}</p>
       </div>
-      <div className="toolbar">
-        <label style={{ cursor: 'default' }} className={'no-select toolbar-section-label no-select toolbar-title-label-size'}>Toolbar</label>
-        <label style={{ cursor: 'default' }} className={'no-select toolbar-section-label no-select toolbar-section-label-size'}>Wallpaper</label>
+      <div className="toolbar" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1' }}>
+        <label style={{ cursor: 'default' }}
+               className={'no-select toolbar-section-label no-select toolbar-title-label-size'}>Toolbar</label>
+        <label style={{ cursor: 'default' }}
+               className={'no-select no-select toolbar-section-label-size'}>Wallpaper</label>
+        <label style={{ cursor: 'default' }}
+               className={'no-select no-select toolbar-section-subtitle-size'}>Options:</label>
         <label htmlFor="upload-image" style={{ cursor: 'pointer' }} className={'button no-select'}>Upload</label>
         <input type="file" id="upload-image" style={{ display: 'none' }} onChange={handleImageUpload} />
         <button onClick={onRevertToDefault} className={'button no-select'}>Default</button>
