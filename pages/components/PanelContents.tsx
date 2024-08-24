@@ -285,7 +285,7 @@ export default function PanelContents() {
            }}>
         </p>
 
-        <p style={{ fontSize: '40px', marginBottom: '-0.1rem', fontWeight: 'lighter' }}>The Temperature
+        <p style={{ fontSize: '40px', marginBottom: '-2rem', fontWeight: 'lighter' }}>The Temperature
           is {temperature}˚F</p>
 
         <p style={{ fontSize: '40px', marginBottom: '-0.1rem', fontWeight: 'lighter' }}>while the Humidity is
