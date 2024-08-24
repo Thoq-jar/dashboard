@@ -5,14 +5,14 @@ import PanelContents from './PanelContents';
 export default function Panel() {
   return (
     <div style={{
-      background: 'rgba(255, 255, 255, 0.3)',
+      background: 'rgba(255, 255, 255, 0.1)',
       backdropFilter: 'blur(15px)',
       position: 'fixed',
       top: '50%',
       left: '50%',
       borderRadius: '50px',
-      height: '80%',
-      width: '70%',
+      height: '78%',
+      width: '80%',
       transform: 'translate(-50%, -50%)',
       zIndex: 1,
       display: 'flex',

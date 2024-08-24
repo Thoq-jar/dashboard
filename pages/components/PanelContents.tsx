@@ -36,7 +36,6 @@ async function fetchLocation(): Promise<{ lat: number, lon: number }> {
 async function fetchSunriseSunset(lat: number, lon: number): Promise<{ sunrise: string, sunset: string }> {
   const response = await fetch(`https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lon}&formatted=0`);
   const data = await response.json();
-
   return {
     sunrise: new Date(data.results.sunrise).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     sunset: new Date(data.results.sunset).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -115,7 +114,7 @@ export default function PanelContents() {
           setTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
           setDate(formatDate(now));
           setGreeting(getGreeting(now.getHours()));
-          setSunsetOrRise(now < new Date(sunrise) ? `sunrise is at ${sunrise}` : now < new Date(sunset) ? `sunset is at ${sunset}` : `sunrise is at ${sunrise}`);
+          setSunsetOrRise(`sunrise is at ${sunrise}\nand the sunset is at ${sunset}`);
         }, 500);
         return () => clearInterval(intervalId);
       });
@@ -126,7 +125,7 @@ export default function PanelContents() {
     const now = new Date();
     setTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
     setGreeting(getGreeting(now.getHours()));
-    setSunsetOrRise(now < new Date(sunrise) ? `sunrise is at ${sunrise}` : now < new Date(sunset) ? `sunset is at ${sunset}` : `sunrise is at ${sunrise}`);
+    setSunsetOrRise(`sunrise is at ${sunrise}\nand the sunset is at ${sunset}`);
   }, [sunrise, sunset]);
 
   return (
@@ -179,7 +178,7 @@ export default function PanelContents() {
         </form>
 
         <p className={'no-select'}
-           style={{ fontSize: '45px', marginBottom: '0.2rem', fontWeight: 'lighter' }}>{greeting}!</p>
+           style={{ fontSize: '45px', marginBottom: '-1rem', fontWeight: 'lighter' }}>{greeting}!</p>
 
         <p style={{ fontSize: '25px', fontWeight: 'lighter', cursor: 'pointer' }} id={'ip'}
            onClick={() => {
@@ -193,13 +192,13 @@ export default function PanelContents() {
            }}>
         </p>
 
-        <p style={{ fontSize: '40px', marginBottom: '-0.1rem', fontWeight: 'lighter' }}>The Temperature
+        <p style={{ fontSize: '40px', marginBottom: '-2.5rem', fontWeight: 'lighter' }}>The Temperature
           is {temperature}˚F</p>
 
-        <p style={{ fontSize: '40px', marginBottom: '-0.1rem', fontWeight: 'lighter' }}>while the Humidity is
+        <p style={{ fontSize: '40px', marginBottom: '0.5rem', fontWeight: 'lighter' }}>while the Humidity is
           around {humidity} %</p>
 
-        <p style={{ fontSize: '40px', marginBottom: '0.3rem', fontWeight: 'lighter' }}>and the {sunsetOrRise}</p>
+        <p style={{ fontSize: '40px', marginBottom: '1rem', fontWeight: 'lighter', whiteSpace: 'pre-line' }}>The {sunsetOrRise}</p>
       </div>
     </main>
   );
