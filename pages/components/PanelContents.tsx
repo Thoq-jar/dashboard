@@ -36,6 +36,7 @@ async function fetchLocation(): Promise<{ lat: number, lon: number }> {
 async function fetchSunriseSunset(lat: number, lon: number): Promise<{ sunrise: string, sunset: string }> {
   const response = await fetch(`https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lon}&formatted=0`);
   const data = await response.json();
+
   return {
     sunrise: new Date(data.results.sunrise).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     sunset: new Date(data.results.sunset).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
