@@ -113,14 +113,6 @@ function mapWeatherCodeToIcon(code: number): string {
   };
   return `http://openweathermap.org/img/wn/${weatherIcons[code]}@2x.png`;
 }
-
-function hexToRgba(hex: string, alpha: number): string {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
-
 async function fetchWeatherCondition(lat: number, lon: number): Promise<{ description: string, icon: string }> {
   const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
   const data = await response.json();

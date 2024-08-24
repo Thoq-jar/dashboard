@@ -8,7 +8,7 @@ interface PanelProps {
   tintColor: string;
 }
 
-export default function Panel({ onImageUpload, onRevertToDefault, onTintChange, tintColor }: PanelProps) {
+export default function Panel({ onImageUpload, onRevertToDefault }: PanelProps) {
   return (
     <div style={{
       background: 'rgba(255, 255, 255, 0.1)',
