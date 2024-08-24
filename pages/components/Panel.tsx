@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { PanelContents } from './PanelContents';
+import PanelContents from './PanelContents';
 
 export default function Panel() {
   return (
