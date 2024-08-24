@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 import React from 'react';
 
+const errorMessages = [
+  'Oh 💩! Connection to Server failed: Change IP address?'
+]
+
 function formatDate(date: Date): string {
   const options: Intl.DateTimeFormatOptions = {
     weekday: 'long',
@@ -42,6 +46,84 @@ async function fetchSunriseSunset(lat: number, lon: number): Promise<{ sunrise: 
   };
 }
 
+function mapWeatherCodeToDescription(code: number): string {
+  const weatherDescriptions: { [key: number]: string } = {
+    0: 'Clear sky',
+    1: 'Mainly clear',
+    2: 'Partly cloudy',
+    3: 'Overcast',
+    45: 'Fog',
+    48: 'Depositing rime fog',
+    51: 'Drizzle: Light',
+    53: 'Drizzle: Moderate',
+    55: 'Drizzle: Dense intensity',
+    56: 'Freezing Drizzle: Light',
+    57: 'Freezing Drizzle: Dense intensity',
+    61: 'Rain: Slight',
+    63: 'Rain: Moderate',
+    65: 'Rain: Heavy intensity',
+    66: 'Freezing Rain: Light',
+    67: 'Freezing Rain: Heavy intensity',
+    71: 'Snow fall: Slight',
+    73: 'Snow fall: Moderate',
+    75: 'Snow fall: Heavy intensity',
+    77: 'Snow grains',
+    80: 'Rain showers: Slight',
+    81: 'Rain showers: Moderate',
+    82: 'Rain showers: Violent',
+    85: 'Snow showers slight',
+    86: 'Snow showers heavy',
+    95: 'Thunderstorm: Slight or moderate',
+    96: 'Thunderstorm with slight hail',
+    99: 'Thunderstorm with heavy hail',
+  };
+  return weatherDescriptions[code] || 'Unknown weather condition';
+}
+
+function mapWeatherCodeToIcon(code: number): string {
+  const weatherIcons: { [key: number]: string } = {
+    0: '01d',
+    1: '01d',
+    2: '02d',
+    3: '04d',
+    45: '50d',
+    48: '50d',
+    51: '09d',
+    53: '09d',
+    55: '09d',
+    56: '13d',
+    57: '13d',
+    61: '10d',
+    63: '10d',
+    65: '10d',
+    66: '13d',
+    67: '13d',
+    71: '13d',
+    73: '13d',
+    75: '13d',
+    77: '13d',
+    80: '09d',
+    81: '09d',
+    82: '09d',
+    85: '13d',
+    86: '13d',
+    95: '11d',
+    96: '11d',
+    99: '11d',
+  };
+  return `http://openweathermap.org/img/wn/${weatherIcons[code]}@2x.png`;
+}
+
+async function fetchWeatherCondition(lat: number, lon: number): Promise<{ description: string, icon: string }> {
+  const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+  const data = await response.json();
+  const weatherCode = data.current_weather.weathercode;
+  return {
+    description: mapWeatherCodeToDescription(weatherCode),
+    icon: mapWeatherCodeToIcon(weatherCode),
+  };
+}
+
 export default function PanelContents() {
   const [greeting, setGreeting] = useState('');
   const [temperature, setTemperature] = useState(0);
@@ -51,6 +133,8 @@ export default function PanelContents() {
   const [date, setDate] = useState(formatDate(new Date()));
   const [sunrise, setSunrise] = useState('');
   const [sunset, setSunset] = useState('');
+  const [weatherCondition, setWeatherCondition] = useState('');
+  const [weatherIcon, setWeatherIcon] = useState('');
   const [ip, setIp] = useState(() => {
     if (typeof window !== 'undefined' && window.localStorage) {
       return localStorage.getItem('ip') || 'error';
@@ -66,7 +150,7 @@ export default function PanelContents() {
     switch (true) {
       case query.toLowerCase().startsWith('duckduckgo'):
         searchQuery = query.slice('duckduckgo'.length).trim();
-        url = searchQuery ? `https://www.duckduckgo.com/search?q=${searchQuery}` : `https://www.duckduckgo.com`;
+        url = searchQuery ? `https://www.duckduckgo.com/?q=${searchQuery}` : `https://www.duckduckgo.com`;
         break;
 
       case query.toLowerCase().startsWith('bing'):
@@ -80,22 +164,22 @@ export default function PanelContents() {
         break;
 
       default:
-        url = `https://www.duckduckgo.com/search?q=${query}`;
+        url = `https://www.duckduckgo.com/?q=${query}`;
     }
     window.open(url, '_blank');
   }
 
   async function getData(): Promise<void> {
-    try {
-      const response = await fetch(`http://${ip}`);
-      const data = await response.json();
-      setTemperature(data.temperature);
-      setHumidity(data.humidity);
-    } catch (error: any) {
-      const ip = document.getElementById('ip') as HTMLParagraphElement;
-      ip.innerText = 'Connection to Server failed! Change IP address?';
-    }
+  try {
+    const response = await fetch(`http://${ip}`);
+    const data = await response.json();
+    setTemperature(data.temperature);
+    setHumidity(data.humidity);
+  } catch (error: any) {
+    const ipElement = document.getElementById('ip') as HTMLParagraphElement;
+    ipElement.innerText = errorMessages[0];
   }
+}
 
   useEffect(() => {
     getData().then();
@@ -104,6 +188,10 @@ export default function PanelContents() {
       fetchSunriseSunset(lat, lon).then(({ sunrise, sunset }) => {
         setSunrise(sunrise);
         setSunset(sunset);
+        fetchWeatherCondition(lat, lon).then(({ description, icon }) => {
+          setWeatherCondition(description);
+          setWeatherIcon(icon);
+        });
 
         const intervalId = setInterval(() => {
           if (ip === 'error') {
@@ -114,7 +202,7 @@ export default function PanelContents() {
           setTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
           setDate(formatDate(now));
           setGreeting(getGreeting(now.getHours()));
-          setSunsetOrRise(`sunrise is at ${sunrise}\nand the sunset is at ${sunset}`);
+          setSunsetOrRise(`sunrise is at ${sunrise}\nand sunset is at ${sunset}`);
         }, 500);
         return () => clearInterval(intervalId);
       });
@@ -125,7 +213,7 @@ export default function PanelContents() {
     const now = new Date();
     setTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
     setGreeting(getGreeting(now.getHours()));
-    setSunsetOrRise(`sunrise is at ${sunrise}\nand the sunset is at ${sunset}`);
+    setSunsetOrRise(`sunrise is at ${sunrise}\nand sunset is at ${sunset}`);
   }, [sunrise, sunset]);
 
   return (
@@ -162,6 +250,11 @@ export default function PanelContents() {
                 whiteSpace: 'nowrap',
               }}>
             {date}
+            <div style={{ display: 'flex', alignItems: 'center', marginTop: '-0.6rem' }}>
+              <p style={{ fontSize: '25px', fontWeight: 'lighter', marginRight: '10px' }}>{weatherCondition}</p>
+              <img src={weatherIcon} alt="Failed to load :("
+                   style={{ width: '50px', height: '50px', marginTop: '5px' }} />
+            </div>
           </h3>
         </div>
 
@@ -178,7 +271,7 @@ export default function PanelContents() {
         </form>
 
         <p className={'no-select'}
-           style={{ fontSize: '45px', marginBottom: '-1rem', fontWeight: 'lighter' }}>{greeting}!</p>
+           style={{ fontSize: '45px', marginBottom: '0.2rem', fontWeight: 'lighter' }}>{greeting}!</p>
 
         <p style={{ fontSize: '25px', fontWeight: 'lighter', cursor: 'pointer' }} id={'ip'}
            onClick={() => {
@@ -192,13 +285,19 @@ export default function PanelContents() {
            }}>
         </p>
 
-        <p style={{ fontSize: '40px', marginBottom: '-2.5rem', fontWeight: 'lighter' }}>The Temperature
+        <p style={{ fontSize: '40px', marginBottom: '-0.1rem', fontWeight: 'lighter' }}>The Temperature
           is {temperature}˚F</p>
 
-        <p style={{ fontSize: '40px', marginBottom: '0.5rem', fontWeight: 'lighter' }}>while the Humidity is
+        <p style={{ fontSize: '40px', marginBottom: '-0.1rem', fontWeight: 'lighter' }}>while the Humidity is
           around {humidity} %</p>
 
-        <p style={{ fontSize: '40px', marginBottom: '1rem', fontWeight: 'lighter', whiteSpace: 'pre-line' }}>The {sunsetOrRise}</p>
+        <p style={{
+          fontSize: '40px',
+          marginBottom: '0.3rem',
+          fontWeight: 'lighter',
+          whiteSpace: 'pre-line',
+        }}>The {sunsetOrRise}</p>
+
       </div>
     </main>
   );
