@@ -1,7 +1,7 @@
-body {
+html, body {
   font-family: -apple-system, sans-serif;
-  background: black;
   color: white;
+  overflow: hidden;
 }
 
 .no-select {
@@ -11,22 +11,65 @@ body {
   -ms-user-select: none;
 }
 
-.wrapper {
-  display: flex;
-  text-align: center;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  width: 100vw;
+.searchBar {
+  font-size: 30px;
+  font-weight: lighter;
+  background: rgba(0, 0, 0, 0);
+  border: 2px solid white;
+  border-radius: 10px;
+  color: white;
+  padding: 10px;
+  outline: none;
+  width: 70%;
+  transition: all 1s ease;
 }
 
-h1 {
-  font-size: 100px;
-  margin-bottom: 1rem;
+.searchBar:focus {
+  width: 100%;
 }
 
-p {
-  font-size: 50px;
-  margin-bottom: 1rem;
+@media (max-width: 900px) {
+  .searchBar {
+    font-size: 20px;
+    padding: 8px;
+  }
+
+  .wrapper h1 {
+    font-size: 50px;
+  }
+
+  .wrapper h2 {
+    font-size: 40px;
+  }
+
+  .wrapper h3 {
+    font-size: 20px;
+  }
+
+  .wrapper p {
+    font-size: 30px;
+  }
+}
+
+@media (max-width: 600px) {
+  .searchBar {
+    font-size: 15px;
+    padding: 5px;
+  }
+
+  .wrapper h1 {
+    font-size: 30px;
+  }
+
+  .wrapper h2 {
+    font-size: 20px;
+  }
+
+  .wrapper h3 {
+    font-size: 15px;
+  }
+
+  .wrapper p {
+    font-size: 20px;
+  }
 }
