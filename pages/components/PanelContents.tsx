@@ -215,7 +215,7 @@ export default function PanelContents({ onImageUpload, onRevertToDefault }: { on
           setDate(formatDate(now));
           setGreeting(getGreeting(now.getHours()));
           setSunsetOrRise(`sunrise is at ${sunrise}\nand sunset is at ${sunset}`);
-        }, 500);
+        }, 1000);
         return () => clearInterval(intervalId);
       });
     });
