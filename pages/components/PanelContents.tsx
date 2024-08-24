@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import React from 'react';
 
 const errorMessages = [
-  'Oh 💩! Connection to Server failed: Change IP address?'
-]
+  'Oh 💩! Connection to Server failed: Change IP address?',
+];
 
 function formatDate(date: Date): string {
   const options: Intl.DateTimeFormatOptions = {
@@ -124,7 +124,7 @@ async function fetchWeatherCondition(lat: number, lon: number): Promise<{ descri
   };
 }
 
-export default function PanelContents() {
+export default function PanelContents({ onImageUpload, onRevertToDefault }: { onImageUpload: (base64Image: string) => void, onRevertToDefault: () => void }) {
   const [greeting, setGreeting] = useState('');
   const [temperature, setTemperature] = useState(0);
   const [humidity, setHumidity] = useState(0);
@@ -141,6 +141,18 @@ export default function PanelContents() {
     }
     return 'error';
   });
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (e.target && e.target.result) {
+          onImageUpload(e.target.result as string);
+        }
+      };
+      reader.readAsDataURL(event.target.files[0]);
+    }
+  };
 
   async function search(): Promise<void> {
     const query = (document.getElementById('searchBar') as HTMLInputElement).value;
@@ -170,16 +182,16 @@ export default function PanelContents() {
   }
 
   async function getData(): Promise<void> {
-  try {
-    const response = await fetch(`http://${ip}`);
-    const data = await response.json();
-    setTemperature(data.temperature);
-    setHumidity(data.humidity);
-  } catch (error: any) {
-    const ipElement = document.getElementById('ip') as HTMLParagraphElement;
-    ipElement.innerText = errorMessages[0];
+    try {
+      const response = await fetch(`http://${ip}`);
+      const data = await response.json();
+      setTemperature(data.temperature);
+      setHumidity(data.humidity);
+    } catch (error: any) {
+      const ipElement = document.getElementById('ip') as HTMLParagraphElement;
+      ipElement.innerText = errorMessages[0];
+    }
   }
-}
 
   useEffect(() => {
     getData().then();
@@ -216,8 +228,9 @@ export default function PanelContents() {
     setSunsetOrRise(`sunrise is at ${sunrise}\nand sunset is at ${sunset}`);
   }, [sunrise, sunset]);
 
+
   return (
-    <main>
+    <main style={{ display: 'flex' }}>
       <div className="wrapper" style={{
         display: 'flex',
         textAlign: 'center',
@@ -228,7 +241,6 @@ export default function PanelContents() {
         width: '100%',
         position: 'relative',
       }}>
-
         <div style={{ position: 'absolute', top: '10px', left: '10px', textAlign: 'left' }}>
           <h2 className="no-select" style={{
             fontSize: '50px',
@@ -253,7 +265,7 @@ export default function PanelContents() {
             <div style={{ display: 'flex', alignItems: 'center', marginTop: '-0.6rem' }}>
               <p style={{ fontSize: '25px', fontWeight: 'lighter', marginRight: '10px' }}>{weatherCondition}</p>
               <img src={weatherIcon} alt="Failed to load :("
-                   style={{ width: '50px', height: '50px', marginTop: '5px' }} />
+                   style={{ width: '50px', height: '50px', marginTop: '5px' }} className={'weather-icon'}/>
             </div>
           </h3>
         </div>
@@ -297,7 +309,13 @@ export default function PanelContents() {
           fontWeight: 'lighter',
           whiteSpace: 'pre-line',
         }}>The {sunsetOrRise}</p>
-
+      </div>
+      <div className="toolbar">
+        <label style={{ cursor: 'default' }} className={'no-select toolbar-section-label no-select toolbar-title-label-size'}>Toolbar</label>
+        <label style={{ cursor: 'default' }} className={'no-select toolbar-section-label no-select toolbar-section-label-size'}>Wallpaper</label>
+        <label htmlFor="upload-image" style={{ cursor: 'pointer' }} className={'button no-select'}>Upload</label>
+        <input type="file" id="upload-image" style={{ display: 'none' }} onChange={handleImageUpload} />
+        <button onClick={onRevertToDefault} className={'button no-select'}>Default</button>
       </div>
     </main>
   );

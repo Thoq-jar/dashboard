@@ -22,10 +22,18 @@ html, body {
   outline: none;
   width: 70%;
   transition: all 1s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.searchBar:hover {
+  width: 85%;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.7);
+
 }
 
 .searchBar:focus {
   width: 100%;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 1);
 }
 
 @media (max-width: 900px) {
@@ -72,4 +80,89 @@ html, body {
   .wrapper p {
     font-size: 20px;
   }
+}
+
+.toolbar {
+  display: flex;
+  width: 100px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  color: white;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 20px;
+  margin-top: 2.5rem;
+  margin-right: 1rem;
+
+}
+
+.toolbar label {
+  margin: 10px 0;
+  cursor: pointer;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.toolbar-section-label {
+  display: flex;
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  color: rgb(100, 100, 100);
+  padding: 5px 10px;
+  transition: all 1s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  cursor: pointer;
+  flex-direction: row;
+}
+
+.toolbar-section-label-size {
+  font-size: 20px;
+}
+
+.toolbar-title-label-size {
+  font-size: 30px;
+}
+
+.toolbar-section-label:hover {
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 1);
+  scale: 1.05;
+}
+
+.button {
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+}
+
+.button:hover {
+  color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  transform: scale(1.05);
+}
+
+.weather-icon {
+  transition: all 1s ease;
+  border-radius: 100px;
+}
+
+.weather-icon:hover {
+  transform: scale(2);
 }

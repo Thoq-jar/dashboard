@@ -2,7 +2,7 @@
 import React from 'react';
 import PanelContents from './PanelContents';
 
-export default function Panel() {
+export default function Panel({ onImageUpload, onRevertToDefault }: { onImageUpload: (base64Image: string) => void, onRevertToDefault: () => void }) {
   return (
     <div style={{
       background: 'rgba(255, 255, 255, 0.1)',
@@ -26,7 +26,7 @@ export default function Panel() {
         height: '100%',
         width: '100%',
       }}>
-        <PanelContents />
+        <PanelContents onImageUpload={onImageUpload} onRevertToDefault={onRevertToDefault} />
       </div>
     </div>
   );
