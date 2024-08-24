@@ -1,6 +1,6 @@
 import React from 'react';
 
-export function Wallpaper() {
+export default function Wallpaper() {
   return (
     <div style={{
       position: 'fixed',

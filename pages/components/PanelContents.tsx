@@ -42,7 +42,7 @@ async function fetchSunriseSunset(lat: number, lon: number): Promise<{ sunrise: 
   };
 }
 
-export function PanelContents() {
+export default function PanelContents() {
   const [greeting, setGreeting] = useState('');
   const [temperature, setTemperature] = useState(0);
   const [humidity, setHumidity] = useState(0);

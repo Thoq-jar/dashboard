@@ -2,7 +2,7 @@
 import React from 'react';
 import { PanelContents } from './PanelContents';
 
-export function Panel() {
+export default function Panel() {
   return (
     <div style={{
       background: 'rgba(255, 255, 255, 0.3)',
