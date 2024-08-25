@@ -16,6 +16,19 @@ function formatDate(date: Date): string {
   return date.toLocaleDateString('en-US', options);
 }
 
+function toggleAPI() {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    if (localStorage.getItem('api') === 'true') {
+      localStorage.setItem('api', 'false');
+    } else if (localStorage.getItem('api') === 'false') {
+      localStorage.setItem('api', 'true');
+    } else {
+      localStorage.setItem('api', 'false');
+    }
+    window.location.reload();
+  }
+}
+
 function getGreeting(hour: number): string {
   switch (true) {
     case hour >= 5 && hour < 12:
@@ -114,6 +127,7 @@ function mapWeatherCodeToIcon(code: number): string {
   };
   return `http://openweathermap.org/img/wn/${weatherIcons[code]}@2x.png`;
 }
+
 async function fetchWeatherCondition(lat: number, lon: number): Promise<{ description: string, icon: string }> {
   const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
   const data = await response.json();
@@ -122,6 +136,14 @@ async function fetchWeatherCondition(lat: number, lon: number): Promise<{ descri
     description: mapWeatherCodeToDescription(weatherCode),
     icon: mapWeatherCodeToIcon(weatherCode),
   };
+}
+
+function convertCelsiusToFahrenheit(celsius: number): number {
+  return celsius * 9 / 5 + 32;
+}
+
+function formatTemperature(temp: any): any {
+  return temp.toFixed(2);
 }
 
 interface PanelContentsProps {
@@ -146,7 +168,6 @@ export default function PanelContents({ onImageUpload, onRevertToDefault }: Pane
     }
     return 'error';
   });
-
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const reader = new FileReader();
@@ -188,52 +209,79 @@ export default function PanelContents({ onImageUpload, onRevertToDefault }: Pane
 
   const getData = useCallback(async (): Promise<void> => {
     try {
-      const response = await fetch(`http://${ip}`);
-      const data = await response.json();
-      setTemperature(data.temperature);
-      setHumidity(data.humidity);
+      if (localStorage.getItem('api') === 'true') {
+        const response = await fetch(`http://${ip}`);
+        const data = await response.json();
+        setHumidity(data.humidity);
+        setTemperature(formatTemperature(data.temperature));
+      } else {
+        const { lat, lon } = await fetchLocation();
+        const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=relative_humidity_2m`);
+        if (!response.ok) {
+          console.error('Failed to fetch weather data from Open-Meteo');
+        }
+        const data = await response.json();
+
+        const hourlyData = data.hourly.relative_humidity_2m[data.hourly.time.length - 1];
+
+        const currentWeatherResponse = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+        const currentWeatherData = await currentWeatherResponse.json();
+
+        setHumidity(hourlyData);
+        const temperatureInFahrenheit = convertCelsiusToFahrenheit(currentWeatherData.current_weather.temperature);
+        const formattedTemperature = formatTemperature(temperatureInFahrenheit);
+        setTemperature(formattedTemperature);
+      }
+
     } catch (error: any) {
-      const ipElement = document.getElementById('ip') as HTMLParagraphElement;
-      ipElement.innerText = errorMessages[0];
+      if (localStorage.getItem('api') === 'true') {
+        const ipElement = document.getElementById('ip') as HTMLParagraphElement;
+        ipElement.innerText = errorMessages[0];
+      } else {
+        console.error('Error fetching weather data:', error);
+      }
     }
   }, [ip]);
 
+  useEffect(() => {
+    getData().then();
+  }, [getData]);
 
-useEffect(() => {
-  getData().then();
 
-  fetchLocation().then(({ lat, lon }) => {
-    fetchSunriseSunset(lat, lon).then(({ sunrise, sunset }) => {
-      setSunrise(sunrise);
-      setSunset(sunset);
-      fetchWeatherCondition(lat, lon).then(({ description, icon }) => {
-        setWeatherCondition(description);
-        setWeatherIcon(icon);
+  useEffect(() => {
+    getData().then();
+
+    fetchLocation().then(({ lat, lon }) => {
+      fetchSunriseSunset(lat, lon).then(({ sunrise, sunset }) => {
+        setSunrise(sunrise);
+        setSunset(sunset);
+        fetchWeatherCondition(lat, lon).then(({ description, icon }) => {
+          setWeatherCondition(description);
+          setWeatherIcon(icon);
+        });
+
+        const intervalId = setInterval(() => {
+          if (ip === 'error') {
+            const ip = document.getElementById('ip') as HTMLParagraphElement;
+            ip.innerText = 'Connection to Server failed! Change IP address?';
+          }
+          const now = new Date();
+          setTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+          setDate(formatDate(now));
+          setGreeting(getGreeting(now.getHours()));
+          setSunsetOrRise(`sunrise is at ${sunrise}\nand sunset is at ${sunset}`);
+        }, 1000);
+        return () => clearInterval(intervalId);
       });
-
-      const intervalId = setInterval(() => {
-        if (ip === 'error') {
-          const ip = document.getElementById('ip') as HTMLParagraphElement;
-          ip.innerText = 'Connection to Server failed! Change IP address?';
-        }
-        const now = new Date();
-        setTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-        setDate(formatDate(now));
-        setGreeting(getGreeting(now.getHours()));
-        setSunsetOrRise(`sunrise is at ${sunrise}\nand sunset is at ${sunset}`);
-      }, 1000);
-      return () => clearInterval(intervalId);
     });
-  });
-}, [getData, ip]);
+  }, [getData, ip]);
 
-useEffect(() => {
-  const now = new Date();
-  setTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-  setGreeting(getGreeting(now.getHours()));
-  setSunsetOrRise(`sunrise is at ${sunrise}\nand sunset is at ${sunset}`);
-}, [sunrise, sunset]);
-
+  useEffect(() => {
+    const now = new Date();
+    setTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    setGreeting(getGreeting(now.getHours()));
+    setSunsetOrRise(`sunrise is at ${sunrise}\nand sunset is at ${sunset}`);
+  }, [sunrise, sunset]);
 
   return (
     <main style={{ display: 'flex' }}>
@@ -271,7 +319,7 @@ useEffect(() => {
             <div style={{ display: 'flex', alignItems: 'center', marginTop: '-0.6rem' }}>
               <p style={{ fontSize: '25px', fontWeight: 'lighter', marginRight: '10px' }}>{weatherCondition}</p>
               <Image src={weatherIcon} width={50} height={50} alt="Failed to load :("
-                   style={{ width: '50px', height: '50px', marginTop: '5px' }} className={'weather-icon'} />
+                     style={{ width: '50px', height: '50px', marginTop: '5px' }} className={'weather-icon'} />
             </div>
           </h3>
         </div>
@@ -304,10 +352,11 @@ useEffect(() => {
         </p>
 
         <p style={{ fontSize: '40px', marginBottom: '-2rem', fontWeight: 'lighter' }}>The Temperature
-          is {temperature}˚F</p>
+          is {temperature ? `${temperature} ˚F` : 'N/A'}</p>
 
-        <p style={{ fontSize: '40px', marginBottom: '-0.1rem', fontWeight: 'lighter' }}>while the Humidity is
-          around {humidity} %</p>
+        <p style={{ fontSize: '40px', marginBottom: '-0.1rem', fontWeight: 'lighter' }}>
+          while the Humidity is around {humidity ? `${humidity} %` : 'N/A'}
+        </p>
 
         <p style={{
           fontSize: '40px',
@@ -326,6 +375,7 @@ useEffect(() => {
         <label htmlFor="upload-image" style={{ cursor: 'pointer' }} className={'button no-select'}>Upload</label>
         <input type="file" id="upload-image" style={{ display: 'none' }} onChange={handleImageUpload} />
         <button onClick={onRevertToDefault} className={'button no-select'}>Default</button>
+        <button onClick={toggleAPI} className={'button no-select'}>API</button>
       </div>
     </main>
   );
