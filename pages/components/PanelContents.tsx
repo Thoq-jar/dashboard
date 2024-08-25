@@ -35,7 +35,7 @@ function getGreeting(hour: number): string {
       return 'Good morning';
     case hour >= 12 && hour < 18:
       return 'Good afternoon';
-    case hour >= 18 && hour < 22:
+    case hour >= 18 && hour < 20:
       return 'Good evening';
     default:
       return 'Good night';
