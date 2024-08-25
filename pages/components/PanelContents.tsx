@@ -224,7 +224,7 @@ export default function PanelContents({ onImageUpload, onRevertToDefault }: Pane
 
         const hourlyData = data.hourly.relative_humidity_2m[data.hourly.time.length - 1];
 
-        const currentWeatherResponse = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+         const currentWeatherResponse = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
         const currentWeatherData = await currentWeatherResponse.json();
 
         setHumidity(hourlyData);
