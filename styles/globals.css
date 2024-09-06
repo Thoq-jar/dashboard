@@ -1,6 +1,10 @@
 html, body {
   font-family: -apple-system, sans-serif;
   color: white;
+  background: #111;
+}
+
+.no-overflow {
   overflow: hidden;
 }
 
@@ -32,7 +36,7 @@ html, body {
 }
 
 .searchBar:focus {
-  width: 100%;
+  width: 90%;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 1);
 }
 
@@ -82,9 +86,21 @@ html, body {
   }
 }
 
+.toolbar-wrapper {
+  display: flex;
+  opacity: 0;
+  transition: all 1s ease;
+  height: 100%;
+}
+
+.toolbar-wrapper:hover {
+  opacity: 1;
+}
+
 .toolbar {
   display: flex;
   width: 100px;
+  height: 90%;
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
@@ -96,7 +112,7 @@ html, body {
   margin-top: 2.5rem;
   margin-right: 1rem;
   margin-left: -7rem;
-
+  transition: all 1s ease;
 }
 
 .toolbar label {
@@ -170,4 +186,43 @@ html, body {
 
 .weather-icon:hover {
   transform: scale(2);
+}
+
+.link-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  align-items: flex-start;
+  height: 100%;
+  width: 100%;
+  text-align: left;
+  color: white;
+}
+
+.link {
+  font-size: 20px;
+  color: white;
+  list-style: circle;
+  cursor: pointer;
+  border: 3px solid white;
+  border-radius: 10px;
+  padding: 10px;
+  background: transparent;
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+  margin: 4px;
+  translate: -20px;
+}
+
+.link:hover {
+  box-shadow: 0 4px 30px rgba(255, 255, 255, 0.7);
+}
+
+.link-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: left;
+  align-items: flex-start;
+  text-align: left;
+  list-style: left;
 }

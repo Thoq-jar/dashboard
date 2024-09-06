@@ -365,17 +365,19 @@ export default function PanelContents({ onImageUpload, onRevertToDefault }: Pane
           whiteSpace: 'pre-line',
         }}>The {sunsetOrRise}</p>
       </div>
-      <div className="toolbar" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1' }}>
-        <label style={{ cursor: 'default' }}
-               className={'no-select toolbar-section-label no-select toolbar-title-label-size'}>Toolbar</label>
-        <label style={{ cursor: 'default' }}
-               className={'no-select no-select toolbar-section-label-size'}>Wallpaper</label>
-        <label style={{ cursor: 'default' }}
-               className={'no-select no-select toolbar-section-subtitle-size'}>Options:</label>
-        <label htmlFor="upload-image" style={{ cursor: 'pointer' }} className={'button no-select'}>Upload</label>
-        <input type="file" id="upload-image" style={{ display: 'none' }} onChange={handleImageUpload} />
-        <button onClick={onRevertToDefault} className={'button no-select'}>Default</button>
-        <button onClick={toggleAPI} className={'button no-select'}>API</button>
+      <div className={'toolbar-wrapper'}>
+        <div className="toolbar" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1' }}>
+          <label style={{ cursor: 'default' }}
+                 className={'no-select toolbar-section-label no-select toolbar-title-label-size'}>Toolbar</label>
+          <label style={{ cursor: 'default' }}
+                 className={'no-select no-select toolbar-section-label-size'}>Wallpaper</label>
+          <label style={{ cursor: 'default' }}
+                 className={'no-select no-select toolbar-section-subtitle-size'}>Options:</label>
+          <label htmlFor="upload-image" style={{ cursor: 'pointer' }} className={'button no-select'}>Upload</label>
+          <input type="file" id="upload-image" style={{ display: 'none' }} onChange={handleImageUpload} />
+          <button onClick={onRevertToDefault} className={'button no-select'}>Default</button>
+          <button onClick={toggleAPI} className={'button no-select'}>API</button>
+        </div>
       </div>
     </main>
   );
